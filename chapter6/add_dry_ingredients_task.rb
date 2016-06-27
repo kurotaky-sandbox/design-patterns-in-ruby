@@ -20,21 +20,41 @@ class MixTask < Task
   end
 end
 
-class MakeBatterTask < Task
+class MakeBatterTask < CompositeTaks
   def initialize
     super('Make batter')
-    @sub_tasks = []
     add_sub_task(AddDryIngredientsTask.new)
     add_sub_task(AddLiquidsTask.new)
     add_sub_task(MixTask.new)
   end
+end
+
+class CompositeTaks < Task
+  def initialize(name)
+    super(name)
+    @sub_tasks = []
+  end
+
+  def <<(task)
+    @sub_tasks << task
+  end
+
+  def [](index)
+    @sub_tasks[index]
+  end
+
+  def []=(index, new_value)
+    @sub_tasks[index] = new_value
+  end
 
   def add_sub_task(task)
     @sub_tasks << task
+    task.parent = self
   end
 
   def remove_sub_task(task)
     @sub_tasks.delete(task)
+    task.parent = nil
   end
 
   def get_time_required
